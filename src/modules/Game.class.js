@@ -74,6 +74,10 @@ class Game {
   }
 
   moveLeft() {
+    if (this.status !== 'playing') {
+      return;
+    }
+
     const newBoard = [];
     let moved = false;
 
@@ -102,26 +106,57 @@ class Game {
     if (moved) {
       this.board = newBoard;
       this.addRandomTile();
+    }
+
+    this.updateStatus();
+  }
+
+  moveRight() {
+    if (this.status !== 'playing') {
+      return;
+    }
+
+    const original = this.cloneBoard(this.board);
+
+    this.board = this.board.map((row) => row.slice().reverse());
+    this.moveLeft();
+    this.board = this.board.map((row) => row.slice().reverse());
+
+    if (JSON.stringify(original) === JSON.stringify(this.board)) {
       this.updateStatus();
     }
   }
 
-  moveRight() {
-    this.board = this.board.map((row) => row.reverse());
-    this.moveLeft();
-    this.board = this.board.map((row) => row.reverse());
-  }
-
   moveUp() {
+    if (this.status !== 'playing') {
+      return;
+    }
+
+    const original = this.cloneBoard(this.board);
+
     this.transpose();
     this.moveLeft();
     this.transpose();
+
+    if (JSON.stringify(original) === JSON.stringify(this.board)) {
+      this.updateStatus();
+    }
   }
 
   moveDown() {
+    if (this.status !== 'playing') {
+      return;
+    }
+
+    const original = this.cloneBoard(this.board);
+
     this.transpose();
     this.moveRight();
     this.transpose();
+
+    if (JSON.stringify(original) === JSON.stringify(this.board)) {
+      this.updateStatus();
+    }
   }
 
   transpose() {
