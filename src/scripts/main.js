@@ -15,7 +15,7 @@ import Game from '../modules/Game.class.js';
 // DOM-елементи
 const boardElement = document.querySelector('.game-field');
 const scoreElement = document.querySelector('.game-score');
-const startButton = document.querySelector('.button.start');
+const startButton = document.querySelector('.button');
 const messageStart = document.querySelector('.message-start');
 const messageWin = document.querySelector('.message-win');
 const messageLose = document.querySelector('.message-lose');
@@ -31,6 +31,7 @@ startButton.addEventListener('click', () => {
   // Приховати стартове повідомлення після початку гри
   messageStart.classList.add('hidden');
 
+  // Клас button завжди має залишатися!
   startButton.textContent = 'Restart';
   startButton.classList.remove('start');
   startButton.classList.add('restart');
@@ -56,7 +57,7 @@ function showMessage(someStatus) {
 }
 
 document.addEventListener('keydown', (someEvent) => {
-  if (game.getStatus() !== 'playing') {
+  if (!game || game.getStatus() !== 'playing') {
     return;
   }
 
@@ -89,6 +90,10 @@ document.addEventListener('keydown', (someEvent) => {
 });
 
 function render() {
+  if (!game) {
+    return;
+  }
+
   const board = game.getState();
   const score = game.getScore();
 
