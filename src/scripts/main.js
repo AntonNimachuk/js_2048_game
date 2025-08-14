@@ -30,6 +30,10 @@ startButton.addEventListener('click', () => {
   render();
   // Приховати стартове повідомлення після початку гри
   messageStart.classList.add('hidden');
+
+  startButton.textContent = 'Restart';
+  startButton.classList.remove('start');
+  startButton.classList.add('restart');
 });
 
 // Відображення повідомлень
