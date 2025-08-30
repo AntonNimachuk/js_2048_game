@@ -4,11 +4,6 @@
 2) Після оновлення сторінки гра запускатись немає.
 3) має пропадати після початку гри : (Press "Start" to begin game. Good luck!)
 */
-// Uncomment the next lines to use your game instance in the browser
-// const Game = require('../modules/Game.class');
-// const game = new Game();
-
-// Write your code here
 
 import Game from '../modules/Game.class.js';
 
@@ -20,18 +15,25 @@ const messageStart = document.querySelector('.message-start');
 const messageWin = document.querySelector('.message-win');
 const messageLose = document.querySelector('.message-lose');
 
+// Обробник для повідомлення про поразку
+messageLose.addEventListener('click', () => {
+  game = new Game();
+  game.restart();
+  render();
+  messageLose.classList.add('hidden');
+  startButton.textContent = 'Restart';
+  startButton.classList.remove('start');
+  startButton.classList.add('restart');
+});
+
 // Старт гри
 let game = null;
 
 startButton.addEventListener('click', () => {
   game = new Game();
-
   game.restart();
   render();
-  // Приховати стартове повідомлення після початку гри
   messageStart.classList.add('hidden');
-
-  // Клас button завжди має залишатися!
   startButton.textContent = 'Restart';
   startButton.classList.remove('start');
   startButton.classList.add('restart');
@@ -116,5 +118,3 @@ function render() {
 
   scoreElement.textContent = score;
 }
-
-render();
