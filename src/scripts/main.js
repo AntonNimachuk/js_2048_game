@@ -203,11 +203,12 @@ document.addEventListener('keydown', (evt) => {
 
   render();
 
-  const status = typeof game.getStatus === 'function' ? game.getStatus() : null;
+  const gameStatus =
+    typeof game.getStatus === 'function' ? game.getStatus() : null;
 
-  if (status === 'win') {
+  if (gameStatus === 'win') {
     showMessage('win');
-  } else if (status === 'lose') {
+  } else if (gameStatus === 'lose') {
     showMessage('lose');
   } else {
     showMessage('playing');
