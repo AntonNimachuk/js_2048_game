@@ -42,6 +42,35 @@ createField();
 // Ігровий екземпляр
 let game = null;
 
+let lastGameStatus = null;
+
+function monitorGameStatus() {
+  if (!game) {
+    lastGameStatus = null;
+    requestAnimationFrame(monitorGameStatus);
+
+    return;
+  }
+
+  const currentStatus =
+    typeof game.getStatus === 'function' ? game.getStatus() : null;
+
+  if (currentStatus !== lastGameStatus) {
+    lastGameStatus = currentStatus;
+
+    if (currentStatus === null) {
+      showMessage('start');
+    } else {
+      showMessage(currentStatus);
+    }
+  }
+
+  requestAnimationFrame(monitorGameStatus);
+}
+
+// Запускаємо моніторинг один раз
+monitorGameStatus();
+
 // Показ/ховання повідомлень та керування видимістю кнопки Restart
 function showMessage(someStatus) {
   if (messageStart) {
