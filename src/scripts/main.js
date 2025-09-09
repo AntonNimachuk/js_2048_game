@@ -1,10 +1,4 @@
-'use strict';
-/* TODO:
-1) квадарти мають бути рызних ввідповідних кольорів.
-2) Після оновлення сторінки гра запускатись немає.
-3) має пропадати після початку гри : (Press "Start" to begin game. Good luck!)
-*/
-
+// ...existing code...
 import Game from '../modules/Game.class.js';
 
 // DOM-елементи
@@ -15,89 +9,223 @@ const messageStart = document.querySelector('.message-start');
 const messageWin = document.querySelector('.message-win');
 const messageLose = document.querySelector('.message-lose');
 
-// Обробник для повідомлення про поразку
-messageLose.addEventListener('click', () => {
-  game = new Game();
-  game.restart();
-  render();
-  messageLose.classList.add('hidden');
-  startButton.textContent = 'Restart';
-  startButton.classList.remove('start');
-  startButton.classList.add('restart');
-});
-
-// Старт гри
-let game = null;
-
-startButton.addEventListener('click', () => {
-  game = new Game();
-  game.restart();
-  render();
-  messageStart.classList.add('hidden');
-  startButton.textContent = 'Restart';
-  startButton.classList.remove('start');
-  startButton.classList.add('restart');
-});
-
-// Відображення повідомлень
-function showMessage(someStatus) {
-  messageStart.classList.add('hidden');
-  messageWin.classList.add('hidden');
-  messageLose.classList.add('hidden');
-
-  if (someStatus === 'win') {
-    messageWin.classList.remove('hidden');
-  }
-
-  if (someStatus === 'lose') {
-    messageLose.classList.remove('hidden');
-  }
-
-  if (someStatus === 'start') {
-    messageStart.classList.remove('hidden');
-  }
-}
-
-document.addEventListener('keydown', (someEvent) => {
-  if (!game || game.getStatus() !== 'playing') {
+// створюємо поле 4x4 в DOM, якщо воно не задане в HTML
+const createField = () => {
+  if (!boardElement) {
     return;
   }
 
-  switch (someEvent.key) {
+  if (boardElement.querySelectorAll('.field-row').length) {
+    return;
+  }
+
+  boardElement.innerHTML = '';
+
+  for (let i = 0; i < 4; i += 1) {
+    const row = document.createElement('tr');
+
+    row.className = 'field-row';
+
+    for (let j = 0; j < 4; j += 1) {
+      const cell = document.createElement('td');
+
+      cell.className = 'field-cell';
+      cell.textContent = '';
+      row.appendChild(cell);
+    }
+    boardElement.appendChild(row);
+  }
+};
+
+createField();
+
+// Ігровий екземпляр
+let game = null;
+
+// Показ/ховання повідомлень та керування видимістю кнопки Restart
+function showMessage(someStatus) {
+  if (messageStart) {
+    messageStart.classList.add('hidden');
+  }
+
+  if (messageWin) {
+    messageWin.classList.add('hidden');
+  }
+
+  if (messageLose) {
+    messageLose.classList.add('hidden');
+  }
+
+  if (someStatus === 'win') {
+    if (messageWin) {
+      messageWin.classList.remove('hidden');
+    }
+
+    if (startButton) {
+      startButton.classList.remove('hidden');
+    }
+
+    return;
+  }
+
+  if (someStatus === 'lose') {
+    if (messageLose) {
+      messageLose.classList.remove('hidden');
+    }
+
+    if (startButton) {
+      startButton.classList.add('hidden');
+    }
+
+    return;
+  }
+
+  if (someStatus === 'start') {
+    if (messageStart) {
+      messageStart.classList.remove('hidden');
+    }
+
+    if (startButton) {
+      startButton.classList.remove('hidden');
+    }
+
+    return;
+  }
+
+  if (someStatus === 'playing') {
+    if (messageStart) {
+      messageStart.classList.add('hidden');
+    }
+
+    if (messageWin) {
+      messageWin.classList.add('hidden');
+    }
+
+    if (messageLose) {
+      messageLose.classList.add('hidden');
+    }
+
+    if (startButton) {
+      startButton.classList.remove('hidden');
+    }
+  }
+}
+
+// Обробник кліку на повідомлення про поразку
+if (messageLose) {
+  messageLose.addEventListener('click', () => {
+    game = new Game();
+    game.restart();
+    render();
+    messageLose.classList.add('hidden');
+
+    if (startButton) {
+      startButton.textContent = 'Restart';
+      startButton.classList.remove('start');
+      startButton.classList.add('restart');
+      startButton.classList.remove('hidden');
+    }
+    showMessage('start');
+  });
+}
+
+// Старт/Restart кнопка
+if (startButton) {
+  startButton.addEventListener('click', () => {
+    const isStartButton = startButton.classList.contains('start');
+
+    if (
+      isStartButton &&
+      game &&
+      typeof game.getStatus === 'function' &&
+      game.getStatus() === 'playing'
+    ) {
+      return;
+    }
+
+    if (!game) {
+      game = new Game();
+    }
+
+    game.restart();
+    render();
+
+    if (messageStart) {
+      messageStart.classList.add('hidden');
+    }
+
+    startButton.textContent = 'Restart';
+    startButton.classList.remove('start');
+    startButton.classList.add('restart');
+    startButton.classList.remove('hidden');
+    showMessage('playing');
+  });
+}
+
+// Обробник клавіш для руху плиток
+document.addEventListener('keydown', (evt) => {
+  if (
+    !game ||
+    typeof game.getStatus !== 'function' ||
+    game.getStatus() !== 'playing'
+  ) {
+    return;
+  }
+
+  switch (evt.key) {
     case 'ArrowLeft':
-      game.moveLeft();
+      if (typeof game.moveLeft === 'function') {
+        game.moveLeft();
+      }
       break;
+
     case 'ArrowRight':
-      game.moveRight();
+      if (typeof game.moveRight === 'function') {
+        game.moveRight();
+      }
       break;
+
     case 'ArrowUp':
-      game.moveUp();
+      if (typeof game.moveUp === 'function') {
+        game.moveUp();
+      }
       break;
+
     case 'ArrowDown':
-      game.moveDown();
+      if (typeof game.moveDown === 'function') {
+        game.moveDown();
+      }
       break;
+
     default:
       return;
   }
 
   render();
 
-  if (game.getStatus() === 'win') {
-    showMessage('win');
-  }
+  const status = typeof game.getStatus === 'function' ? game.getStatus() : null;
 
-  if (game.getStatus() === 'lose') {
+  if (status === 'win') {
+    showMessage('win');
+  } else if (status === 'lose') {
     showMessage('lose');
+  } else {
+    showMessage('playing');
   }
 });
 
+// Функція рендеру поля і рахунку
 function render() {
   if (!game) {
     return;
   }
 
-  const board = game.getState();
-  const score = game.getScore();
+  const board = typeof game.getState === 'function' ? game.getState() : null;
+  const score = typeof game.getScore === 'function' ? game.getScore() : 0;
+
+  if (!board || !Array.isArray(board) || board.length === 0) {
+    return;
+  }
 
   const rows = boardElement.querySelectorAll('.field-row');
 
@@ -116,5 +244,10 @@ function render() {
     });
   });
 
-  scoreElement.textContent = score;
+  if (scoreElement) {
+    scoreElement.textContent = String(score);
+  }
 }
+
+// Початковий стан інтерфейсу
+showMessage('start');
