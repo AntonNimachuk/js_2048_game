@@ -103,7 +103,10 @@ function showMessage(someStatus) {
     }
 
     if (startButton) {
-      startButton.classList.add('hidden');
+      startButton.textContent = 'Restart';
+      startButton.classList.remove('start');
+      startButton.classList.add('restart');
+      startButton.classList.remove('hidden');
     }
 
     return;
@@ -138,24 +141,6 @@ function showMessage(someStatus) {
       startButton.classList.remove('hidden');
     }
   }
-}
-
-// Обробник кліку на повідомлення про поразку
-if (messageLose) {
-  messageLose.addEventListener('click', () => {
-    game = new Game();
-    game.restart();
-    render();
-    messageLose.classList.add('hidden');
-
-    if (startButton) {
-      startButton.textContent = 'Restart';
-      startButton.classList.remove('start');
-      startButton.classList.add('restart');
-      startButton.classList.remove('hidden');
-    }
-    showMessage('start');
-  });
 }
 
 // Старт/Restart кнопка
